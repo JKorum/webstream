@@ -1,0 +1,18 @@
+#col-register {
+  max-width: 380px;
+}
+
+#background {
+  overflow-y: auto;
+  align-items: center;
+}
+
+#logo {
+  width: 100px;
+}
+
+@media (max-height: 572px) {
+  #background {
+    align-items: flex-start;
+  }
+}
