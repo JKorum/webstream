@@ -1,7 +1,28 @@
 <?php
-if (isset($_POST['submit'])) {
-  echo 'submit';
+require_once('includes/config.php');
+require_once('includes/classes/FormSanitizer.php');
+require_once('includes/classes/Constants.php');
+require_once('includes/classes/Account.php');
+
+if (isset($_SESSION["userLoggedIn"])) {
+  header("Location: index.php");
 }
+
+$account = new Account($con);
+
+if (isset($_POST['submit'])) {
+  $username = FormSanitizer::sanitizeUsername($_POST['username']);
+  $password = FormSanitizer::sanitizePassword($_POST['password']);
+
+  $success = $account->login($username, $password);
+  if ($success) {
+    $_SESSION["userLoggedIn"] = $username;
+    header("Location: index.php");
+  } else {
+    $loginError = $account->getError(Constants::$loginError);
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -28,10 +49,13 @@ if (isset($_POST['submit'])) {
           <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 
             <div class="form-group">
-              <input type="text" class="form-control" name='userName' placeholder="Username" required>
+              <input type="text" class="form-control<?php echo isset($loginError) ? ' is-invalid' : null; ?>" name='username' placeholder="Username" value="<?php echo isset($username) ? $username : ""; ?>" required>
+              <div class="invalid-feedback">
+                Sorry, login is failed.
+              </div>
             </div>
             <div class="form-group">
-              <input type="password" class="form-control" name='password' placeholder="Password" required>
+              <input type="password" class="form-control<?php echo isset($loginError) ? ' is-invalid' : null; ?>" name='password' placeholder="Password" value="<?php echo isset($password) ? $password : ""; ?>" required>
             </div>
             <button type="submit" class="btn btn-outline-primary mr-1" name="submit">Submit</button>
             <a href="register.php" class="btn btn-outline-info">Go To Register</a>
