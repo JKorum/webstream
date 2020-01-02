@@ -11,6 +11,28 @@
   width: 100px;
 }
 
+.overlay-preview {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.preview-details {
+  color: #e5e5e5;
+}
+
+.preview-buttons button {
+  color: #e5e5e5;
+  background: rgba(51, 51, 51, 0.4);
+  border: none;
+  transition: all linear 0.2s;
+}
+
+.preview-buttons button:hover {
+  color: #141414;
+  background: #e5e5e5;
+}
+
 @media (max-height: 572px) {
   #background {
     align-items: flex-start;
