@@ -1,6 +1,7 @@
 <?php
 require_once('includes/config.php');
 require_once('includes/classes/PreviewProvider.php');
+require_once('includes/classes/CategoryContainers.php');
 
 if (!isset($_SESSION["userLoggedIn"])) {
   header("Location: register.php");
@@ -9,9 +10,17 @@ if (!isset($_SESSION["userLoggedIn"])) {
 $username = $_SESSION["userLoggedIn"];
 
 $preview = new PreviewProvider($con, $username);
+$categories = new CategoryContainers($con, $username);
+
+$previewHtml = $preview->createPreviewVideo(null);
+
+$categoriesHtml = $categories->showAllCategories();
+
 
 
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,17 +32,33 @@ $preview = new PreviewProvider($con, $username);
   <title>Document</title>
   <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/lumen/bootstrap.min.css" rel="stylesheet" integrity="sha384-715VMUUaOfZR3/rWXZJ9agJ/udwSXGEigabzUbJm2NR4/v5wpDy8c14yedZN6NL7" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/styles/style.css">
+
+  <link rel="stylesheet" type="text/css" href="assets/slick/slick.css" />
+  <link rel="stylesheet" type="text/css" href="assets/slick/slick-theme.css" />
+
   <script src="https://kit.fontawesome.com/df3682f87e.js" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
-  <div class="container-fluid p-0">
-    <?php echo $preview->createPreviewVideo(null); ?>
-  </div>
+  <?php
+  print "
+    <div id='container-main' class='container-fluid p-0'>
+      <div class='row m-0'>
+        <div class='col-12 p-0'>
+          $previewHtml
+        </div>
+      </div>
+      $categoriesHtml
+    </div>    
+    ";
 
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  ?>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="assets/slick/slick.min.js"></script>
+
   <script>
     const btnMute = document.getElementById('btn-mute')
     const video = document.getElementById('video-preview')
@@ -69,6 +94,43 @@ $preview = new PreviewProvider($con, $username);
       video.addEventListener('ended', handleVideoStop)
 
     }
+  </script>
+  <script>
+    $(document).ready(function() {
+      $('.slider').slick({
+        centerPadding: 0,
+        arrows: false,
+        dots: true,
+        slidesToShow: 2,
+        slidesToScroll: 1,
+        mobileFirst: true,
+        responsive: [{
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 3
+            }
+          },
+          {
+            breakpoint: 992,
+            settings: {
+              slidesToShow: 4
+            }
+          },
+          {
+            breakpoint: 1200,
+            settings: {
+              slidesToShow: 5
+            }
+          },
+          {
+            breakpoint: 1424,
+            settings: {
+              slidesToShow: 6
+            }
+          }
+        ]
+      })
+    })
   </script>
 </body>
 

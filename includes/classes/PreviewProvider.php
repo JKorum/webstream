@@ -1,5 +1,6 @@
 <?php
 require_once('Entity.php');
+require_once('EntityProvider.php');
 
 class PreviewProvider
 {
@@ -50,28 +51,29 @@ class PreviewProvider
                     >
                       <i id='icon-mute' class='fas fa-volume-mute pr-1'></i>
                       <span id='btn-mute-text'>Muted</span>
-                    </button>
+                    </button>                    
                   </div>
-                <div>                
+                </div>
               </div>
             </div>";
   }
 
+  public function createEntityPreview($entity)
+  {
+    $id = $entity->getId();
+    $thumbnail = $entity->getThumbnail();
+    $name = $entity->getName();
 
+    return "
+    <div class='slider-img-container'>
+      <a href='entity.php?id=$id'><img src='$thumbnail' class='slider-img'></a>
+    </div>
+    ";
+  }
 
   private function getRandomEntity()
   {
-    /* retrieve rows in random order */
-    $query = $this->con->prepare(
-      "SELECT * FROM entities 
-       ORDER BY RAND() LIMIT 1"
-    );
-
-    $query->execute();
-
-    /* return row as associative array */
-    $row = $query->fetch(PDO::FETCH_ASSOC);
-
-    return new Entity($this->con, $row);
+    $entitiesArray = EntityProvider::getEntities($this->con, null, 1);
+    return $entitiesArray[0];
   }
 }
