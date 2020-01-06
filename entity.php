@@ -2,25 +2,37 @@
 require_once('includes/config.php');
 require_once('includes/classes/PreviewProvider.php');
 require_once('includes/classes/CategoryContainers.php');
+require_once('includes/classes/Entity.php');
+require_once('includes/classes/ErrorRender.php');
+require_once('includes/classes/SeasonProvider.php');
 
 if (!isset($_SESSION["userLoggedIn"])) {
   header("Location: register.php");
 }
 
-$username = $_SESSION["userLoggedIn"];
+if (!isset($_GET['id'])) {
+  $error = ErrorRender::show('Error: no entity id provided.');
+} else {
 
-$preview = new PreviewProvider($con, $username);
-$categories = new CategoryContainers($con, $username);
+  $entityId = $_GET['id'];
+  $entity = new Entity($con, $entityId);
 
-$previewHtml = $preview->createPreviewVideo(null);
+  $username = $_SESSION["userLoggedIn"];
 
-$categoriesHtml = $categories->showAllCategories();
+  $preview = new PreviewProvider($con, $username);
+  $previewHtml = $preview->createPreviewVideo($entity);
 
+  $provider = new SeasonProvider($con, $username);
+  $seasonsHtml = $provider->create($entity) ? $provider->create($entity) : '';
 
-
+  $category = new CategoryContainers($con, $username);
+  $suggestToWatchHtml = $category->showCategory(
+    $entity->getCategoryId(),
+    "You might also like",
+    $entity->getId()
+  );
+}
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -42,16 +54,26 @@ $categoriesHtml = $categories->showAllCategories();
 
 <body>
   <?php
-  print "
+
+  if (!isset($error)) {
+    print "
     <div id='container-main' class='container-fluid p-0'>
       <div class='row m-0'>
         <div class='col-12 p-0'>
           $previewHtml
         </div>
       </div>
-      $categoriesHtml
+      $seasonsHtml
+      $suggestToWatchHtml      
     </div>    
     ";
+  } else {
+    print "
+    <div id='container-main' class='container-fluid p-0 error-wrapper'>
+      $error
+    </div>    
+    ";
+  }
 
   ?>
 
@@ -97,10 +119,45 @@ $categoriesHtml = $categories->showAllCategories();
   </script>
   <script>
     $(document).ready(function() {
+      $('.slider').slick({
+        centerPadding: 0,
+        arrows: false,
+        dots: true,
+        infinite: false,
+        slidesToShow: 2,
+        slidesToScroll: 1,
+        mobileFirst: true,
+        responsive: [{
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 3
+            }
+          },
+          {
+            breakpoint: 992,
+            settings: {
+              slidesToShow: 4
+            }
+          },
+          {
+            breakpoint: 1200,
+            settings: {
+              slidesToShow: 5
+            }
+          },
+          {
+            breakpoint: 1424,
+            settings: {
+              slidesToShow: 6
+            }
+          }
+        ]
+      })
       $('.slider-infinite').slick({
         centerPadding: 0,
         arrows: false,
         dots: true,
+        infinite: true,
         slidesToShow: 2,
         slidesToScroll: 1,
         mobileFirst: true,

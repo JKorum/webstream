@@ -14,6 +14,37 @@ class CategoryContainers
     $this->username = $username;
   }
 
+  public function showCategory($categoryId, $title = null, $exclude)
+  {
+    $query = $this->con->prepare(
+      "SELECT * FROM categories
+       WHERE id=:categoryId"
+    );
+
+    $query->bindValue(':categoryId', $categoryId);
+    $query->execute();
+
+    $categoriesRowsHtml = "";
+
+    $row = $query->fetch(PDO::FETCH_ASSOC);
+    $categoryHtml = $this->getCategoryHtml($row, $title, true, true, $exclude);
+
+    /* check if category has entities in it */
+    if ($categoryHtml !== null) {
+
+      $title = $title === null ? $row['name'] : $title;
+
+      $categoriesRowsHtml .= "
+        <div class='mt-4'>
+          <h5 class='category-title pl-1'><a href='#' class='text-reset text-decoration-none'>$title</a></h5>  
+          <div class='slider-infinite'>$categoryHtml</div>                
+        </div>
+      ";
+    }
+
+    return $categoriesRowsHtml;
+  }
+
   public function showAllCategories()
   {
     $query = $this->con->prepare(
@@ -24,7 +55,7 @@ class CategoryContainers
 
     $categoriesRowsHtml = "";
     while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-      $categoryHtml = $this->getCategoryHtml($row, null, true, true);
+      $categoryHtml = $this->getCategoryHtml($row, null, true, true, null);
 
       /* check if category has entities in it */
       if ($categoryHtml !== null) {
@@ -34,7 +65,7 @@ class CategoryContainers
         $categoriesRowsHtml .= "
         <div class='mt-4'>
           <h5 class='category-title pl-1'><a href='#' class='text-reset text-decoration-none'>$categoryName</a></h5>  
-          <div class='slider'>$categoryHtml</div>                
+          <div class='slider-infinite'>$categoryHtml</div>                
         </div>
         ";
       }
@@ -43,15 +74,15 @@ class CategoryContainers
     return $categoriesRowsHtml;
   }
 
-  private function getCategoryHtml($sqlData, $title, $tvShows, $movies)
+  private function getCategoryHtml($sqlData, $title, $tvShows, $movies, $exclude)
   {
     $categoryId = $sqlData['id'];
-    $title = $title === null ? $sqlData['name'] : $title;
+    // $title = $title === null ? $sqlData['name'] : $title;
 
     $entities = array();
 
     if ($tvShows && $movies) {
-      $entities = EntityProvider::getEntities($this->con, $categoryId, 10);
+      $entities = EntityProvider::getEntities($this->con, $categoryId, 10, $exclude);
     } elseif ($tvShows) {
       # get tv-show entities 
     } else {

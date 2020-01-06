@@ -73,7 +73,7 @@ class PreviewProvider
 
   private function getRandomEntity()
   {
-    $entitiesArray = EntityProvider::getEntities($this->con, null, 1);
+    $entitiesArray = EntityProvider::getEntities($this->con, null, 1, null);
     return $entitiesArray[0];
   }
 }
