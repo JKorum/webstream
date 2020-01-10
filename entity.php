@@ -56,6 +56,7 @@ if (!isset($_GET['id'])) {
   <?php
 
   if (!isset($error)) {
+    print include 'includes/navbar.php';
     print "
     <div id='container-main' class='container-fluid p-0'>
       <div class='row m-0'>
@@ -83,6 +84,27 @@ if (!isset($_GET['id'])) {
   <script src="assets/js/helpers.js"></script>
 
   <script>
+    /* toggle navbar color */
+    const navbar = document.getElementById('nav-main')
+    if (navbar) {
+      window.addEventListener('load', () => {
+        if (window.pageYOffset > navbar.offsetHeight) {
+          navbar.classList.add('nav-dark')
+        }
+      })
+      document.addEventListener('scroll', () => {
+        if (window.pageYOffset > navbar.offsetHeight) {
+          if (!navbar.classList.contains('nav-dark')) {
+            navbar.classList.add('nav-dark')
+          }
+        }
+        if (window.pageYOffset === 0) {
+          navbar.classList.remove('nav-dark')
+        }
+      })
+    }
+    /* ------------------ */
+
     const btnPlay = document.getElementById('btn-play');
     if (btnPlay && watchVideo) {
       const id = btnPlay.dataset.video
