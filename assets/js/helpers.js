@@ -65,3 +65,19 @@ const getVideoStart = async (user, video, player, handler) => {
     console.log('Error: ', err)
   }
 }
+
+const replayVideo = () => {
+  const replay = document.getElementById('replay')
+  const player = document.getElementById('player')
+  const next = document.getElementById('video-nav-next')
+
+  if (replay && player && next) {
+    player.currentTime = 0
+    player.play()
+    next.style.display = 'none'
+  }
+}
+
+const watchVideo = id => {
+  return () => (window.location.href = `watch.php?id=${id}`)
+}

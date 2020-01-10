@@ -58,8 +58,16 @@ $categoriesHtml = $categories->showAllCategories();
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script type="text/javascript" src="assets/slick/slick.min.js"></script>
+  <script src="assets/js/helpers.js"></script>
 
   <script>
+    const btnPlay = document.getElementById('btn-play');
+    if (btnPlay && watchVideo) {
+      const id = btnPlay.dataset.video
+      const handler = watchVideo(id)
+      btnPlay.addEventListener('click', handler)
+    }
+
     const btnMute = document.getElementById('btn-mute')
     const video = document.getElementById('video-preview')
     const icon = document.getElementById('icon-mute')

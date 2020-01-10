@@ -35,14 +35,17 @@ class SeasonProvider
         $thumbnail = $video->getThumbnail();
         $episodeNumber = $video->getEpisodeNumber();
 
-        # temp html ->
+        $isFinished = $video->isFinished($this->username);
+        $isFinished = $isFinished ? "<i class='fas fa-check-circle finished pr-1'></i>" : "";
+
         $videosHtml .= "
           <div class='slider-img-container'>
             <a href='watch.php?id=$id'><img src='$thumbnail' class='slider-img'></a>
-            <div class='episode-info'>
+            <div class='episode-info d-flex justify-content-between align-items-center'>
               <p class='p-0 pl-1 m-0'>
                 $episodeNumber. $title
               </p>
+              $isFinished
             </div>
           </div>
         ";

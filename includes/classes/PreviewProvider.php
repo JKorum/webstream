@@ -1,6 +1,8 @@
 <?php
 require_once('Entity.php');
 require_once('EntityProvider.php');
+require_once('VideoProvider.php');
+require_once('Video.php');
 
 class PreviewProvider
 {
@@ -24,7 +26,13 @@ class PreviewProvider
     $thumbnail = $entity->getThumbnail();
     $preview = $entity->getPreview();
 
-    # TODO: add preview subtitle
+    $videoId = VideoProvider::getEntityVideoId($this->con, $id, $this->username);
+    $video = new Video($this->con, $videoId);
+    $subtitle = $video->getSeasonAndEpisode();
+
+    $isInProgress = $video->isInProgress($this->username) ? 'Resume' : 'Play';
+
+
     # alternative to obj tag: <img id='img-preview' class='img-fluid' src='$thumbnail' hidden>
 
     return "<div class='embed-responsive embed-responsive-16by9 position-relative d-flex'> 
@@ -36,13 +44,16 @@ class PreviewProvider
               <div class='overlay-preview position-absolute d-flex align-items-center'>
                 <div class='preview-details pl-3'>
                   <h1 class='display-4'>$name</h1>
+                  <p class='lead'>$subtitle</p>
                   <div class='preview-buttons'>
                     <button 
+                      id='btn-play'
                       class='btn mt-0 mr-1'
                       type='button'
+                      data-video='$videoId'
                     >
                       <i class='far fa-play-circle pr-1'></i>
-                      Play
+                      $isInProgress
                     </button>
                     <button 
                       id='btn-mute'

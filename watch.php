@@ -3,13 +3,14 @@
 require_once('includes/config.php');
 require_once('includes/classes/ErrorRender.php');
 require_once('includes/classes/Video.php');
+require_once('includes/classes/VideoProvider.php');
 
 if (!isset($_SESSION["userLoggedIn"])) {
   header("Location: register.php");
 }
 
 if (!isset($_GET['id'])) {
-  $error = ErrorRender::show('Error: no entity id provided.');
+  $error = ErrorRender::show('Error: no video id provided.');
 } else {
 
   $video = new Video($con, $_GET['id']);
@@ -17,6 +18,11 @@ if (!isset($_GET['id'])) {
 
   $source = $video->getFilePath();
   $title = $video->getTitle();
+
+  $nextVideo = VideoProvider::getUpNext($con, $video);
+  $nextVideoEntityName = $nextVideo->getEntityName();
+  $nextVideoTitle = $nextVideo->getTitle();
+  $nextVideoInfo = $nextVideo->getSeasonAndEpisode();
 }
 
 ?>
@@ -47,18 +53,25 @@ if (!isset($_GET['id'])) {
         <div class='col-12 p-0'>
           <div class='embed-responsive embed-responsive-16by9 position-relative d-flex'>
             <div id='video-nav-back' class='animated faster'>
-              <i onclick='goBack()' class='fas fa-arrow-circle-left fa-5x p-2'></i>
+              <i onclick='goBack()' class='fas fa-arrow-circle-left fa-5x p-2 pl-3'></i>
               <h1 class='display-4 m-0 p-2'>$title</h1>
+              <i id='replay' onclick='replayVideo()' class='fas fa-redo fa-4x p-2 pr-3 ml-auto'></i>
+            </div>
+            <div id='video-nav-next' class='p-3 rounded animated faster fadeIn'>              
+              <h1>Up Next</h1>            
+              <p class='lead'>$nextVideoTitle</p>   
+              <p>$nextVideoInfo</p>                         
+              <button id='play-next' type='button' class='btn btn-block'>
+                <i class='fas fa-play'></i>
+                Play
+              </button>
             </div>
             <video id='player' controls autoplay class='embed-responsive-item'>
               <source src='$source' type='video/mp4'>              
             </video>
-          </div>   
-
+          </div>
         </div>
-
       </div>  
-
     </div>    
     ";
   } else {
@@ -76,6 +89,12 @@ if (!isset($_GET['id'])) {
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="assets/js/helpers.js"></script>
   <script>
+    const btnPlayNext = document.getElementById('play-next')
+    if (watchVideo && btnPlayNext) {
+      const handler = watchVideo("<?php echo $nextVideo->getId(); ?>")
+      btnPlayNext.addEventListener('click', handler)
+    }
+
     /* track video progress */
     const user = "<?php echo $_SESSION["userLoggedIn"]; ?>"
     const video = "<?php echo $video->getId(); ?>"
@@ -117,6 +136,14 @@ if (!isset($_GET['id'])) {
         player.addEventListener('pause', handlePause) // run on pause and video end
         player.addEventListener('ended', handleEnd)
 
+      }
+
+      /* show watch next element*/
+      const next = document.getElementById('video-nav-next')
+      if (player && next) {
+        player.addEventListener('ended', () => {
+          next.style.display = 'block';
+        })
       }
 
     }

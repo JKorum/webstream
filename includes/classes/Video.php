@@ -61,6 +61,21 @@ class Video
     return $this->sqlData['episode'];
   }
 
+  public function getEntityId()
+  {
+    return $this->entity->getId();
+  }
+
+  public function getEntityName()
+  {
+    return $this->entity->getName();
+  }
+
+  public function getSeasonNumber()
+  {
+    return $this->sqlData['season'];
+  }
+
   public function incrementViews()
   {
     $query = $this->con->prepare(
@@ -68,5 +83,49 @@ class Video
     );
     $query->bindValue(":id", $this->getId());
     $query->execute();
+  }
+
+  public function isMovie()
+  {
+    return $this->sqlData['isMovie'] == 1;
+  }
+
+  public function getSeasonAndEpisode()
+  {
+    if (!$this->isMovie()) {
+      $season = $this->getSeasonNumber();
+      $episode = $this->getEpisodeNumber();
+
+      return "Season $season, episode $episode";
+    }
+  }
+
+  public function isInProgress($username)
+  {
+    $query = $this->con->prepare(
+      "SELECT * FROM videoprogress
+       WHERE videoId = :videoId 
+       AND username = :username"
+    );
+    $query->bindValue(":videoId", $this->sqlData['id']);
+    $query->bindValue(":username", $username);
+    $query->execute();
+
+    return $query->fetch(PDO::FETCH_ASSOC);
+  }
+
+  public function isFinished($username)
+  {
+    $query = $this->con->prepare(
+      "SELECT * FROM videoprogress
+       WHERE videoId = :videoId 
+       AND username = :username
+       AND finished = 1"
+    );
+    $query->bindValue(":videoId", $this->sqlData['id']);
+    $query->bindValue(":username", $username);
+    $query->execute();
+
+    return $query->fetch(PDO::FETCH_ASSOC);
   }
 }
