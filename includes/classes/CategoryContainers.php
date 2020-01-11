@@ -36,7 +36,7 @@ class CategoryContainers
 
       $categoriesRowsHtml .= "
         <div class='mt-4'>
-          <h5 class='category-title pl-1'><a href='#' class='text-reset text-decoration-none'>$title</a></h5>  
+          <h5 class='category-title pl-1' style='pointer-events:none;'>$title</h5>         
           <div class='slider-infinite'>$categoryHtml</div>                
         </div>
       ";
@@ -61,10 +61,71 @@ class CategoryContainers
       if ($categoryHtml !== null) {
 
         $categoryName = $row['name'];
+        $id = $row['id'];
 
         $categoriesRowsHtml .= "
         <div class='mt-4'>
-          <h5 class='category-title pl-1'><a href='#' class='text-reset text-decoration-none'>$categoryName</a></h5>  
+          <h5 class='category-title pl-1'><a href='category.php?id=$id' class='text-reset text-decoration-none'>$categoryName</a></h5>  
+          <div class='slider-infinite'>$categoryHtml</div>                
+        </div>
+        ";
+      }
+    }
+
+    return $categoriesRowsHtml;
+  }
+
+  public function showTVShowsCategories()
+  {
+    $query = $this->con->prepare(
+      "SELECT * FROM categories"
+    );
+
+    $query->execute();
+
+    $categoriesRowsHtml = "";
+    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+      $categoryHtml = $this->getCategoryHtml($row, null, true, false, null);
+
+      /* check if category has entities in it */
+      if ($categoryHtml !== null) {
+
+        $categoryName = $row['name'];
+        $id = $row['id'];
+
+        $categoriesRowsHtml .= "
+        <div class='mt-4'>
+          <h5 class='category-title pl-1'><a href='category.php?id=$id' class='text-reset text-decoration-none'>$categoryName</a></h5>  
+          <div class='slider-infinite'>$categoryHtml</div>                
+        </div>
+        ";
+      }
+    }
+
+    return $categoriesRowsHtml;
+  }
+
+  public function showMoviesCategories()
+  {
+    $query = $this->con->prepare(
+      "SELECT * FROM categories"
+    );
+
+    $query->execute();
+
+    $categoriesRowsHtml = "";
+    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+      $categoryHtml = $this->getCategoryHtml($row, null, false, true, null);
+
+      /* check if category has entities in it */
+      if ($categoryHtml !== null) {
+
+        $categoryName = $row['name'];
+        $id = $row['id'];
+
+        $categoriesRowsHtml .= "
+        <div class='mt-4'>
+          <h5 class='category-title pl-1'><a href='category.php?id=$id' class='text-reset text-decoration-none'>$categoryName</a></h5>  
           <div class='slider-infinite'>$categoryHtml</div>                
         </div>
         ";
@@ -84,9 +145,9 @@ class CategoryContainers
     if ($tvShows && $movies) {
       $entities = EntityProvider::getEntities($this->con, $categoryId, 10, $exclude);
     } elseif ($tvShows) {
-      # get tv-show entities 
+      $entities = EntityProvider::getShowsEntities($this->con, $categoryId, 10);
     } else {
-      # get movie entities
+      $entities = EntityProvider::getMoviesEntities($this->con, $categoryId, 10);
     }
 
     /* check if category has entities in it */

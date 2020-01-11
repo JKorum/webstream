@@ -15,6 +15,36 @@ class PreviewProvider
     $this->username = $username;
   }
 
+  public function createCategoryPreviewVideo($categoryId)
+  {
+    $entitiesArray = EntityProvider::getEntities($this->con, $categoryId, 1, null);
+    if (count($entitiesArray) === 0) {
+      return null;
+    }
+
+    return $this->createPreviewVideo($entitiesArray[0]);
+  }
+
+  public function createShowPreviewVideo()
+  {
+    $entitiesArray = EntityProvider::getShowsEntities($this->con, null, 1);
+    if (count($entitiesArray) === 0) {
+      return null;
+    }
+
+    return $this->createPreviewVideo($entitiesArray[0]);
+  }
+
+  public function createMoviePreviewVideo()
+  {
+    $entitiesArray = EntityProvider::getMoviesEntities($this->con, null, 1);
+    if (count($entitiesArray) === 0) {
+      return null;
+    }
+
+    return $this->createPreviewVideo($entitiesArray[0]);
+  }
+
   public function createPreviewVideo($entity)
   {
     if ($entity === null) {

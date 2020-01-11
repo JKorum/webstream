@@ -7,6 +7,10 @@ body {
   max-width: 1600px;
 }
 
+h1 {
+  color: #e5e5e5;
+}
+
 #col-register {
   max-width: 380px;
 }
