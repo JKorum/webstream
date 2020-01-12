@@ -81,3 +81,27 @@ const replayVideo = () => {
 const watchVideo = id => {
   return () => (window.location.href = `watch.php?id=${id}`)
 }
+
+const searchEntities = async (user, term, results) => {
+  try {
+    const formData = new FormData()
+    formData.set('user', user)
+    formData.set('term', term)
+
+    const config = {
+      url: 'http://127.0.0.1:80/cinema/ajax/search.php',
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      method: 'POST',
+      data: formData
+    }
+
+    const response = await axios(config)
+    if (response.status === 200) {
+      results.innerHTML = response.data
+    }
+  } catch (err) {
+    console.log('Error: ', err)
+  }
+}

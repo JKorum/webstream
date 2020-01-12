@@ -3,6 +3,23 @@ require_once('Entity.php');
 
 class EntityProvider
 {
+  public static function getSearchEntities($con, $term)
+  {
+    $query = $con->prepare(
+      "SELECT * FROM entities 
+       WHERE name LIKE CONCAT('%', :term, '%')
+       LIMIT 30"
+    );
+
+    $query->bindValue(':term', $term);
+    $query->execute();
+
+    $result = array();
+    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+      $result[] = new Entity($con, $row);
+    }
+    return $result;
+  }
 
   public static function getEntities($con, $categoryId, $limit, $exclude)
   {
