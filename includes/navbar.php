@@ -31,6 +31,11 @@ return "
           <i class='fas fa-user fa-lg'></i>
         </a>
       </li>
+      <li class='nav-item'>
+        <a class='nav-link' href='logout.php'>
+          <i class='fas fa-sign-out-alt fa-lg'></i>
+        </a>
+      </li>
     </ul>
   </div>    
 </nav>";

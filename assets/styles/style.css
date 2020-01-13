@@ -1,4 +1,5 @@
-html {
+html,
+body {
   background: #141414;
 }
 
@@ -13,6 +14,10 @@ h1 {
 
 #col-register {
   max-width: 380px;
+}
+
+#col-register h1 {
+  color: #222;
 }
 
 #background {
@@ -215,6 +220,20 @@ h1 {
   width: 280px;
   height: 180px;
   flex-shrink: 0;
+}
+
+/* profile page */
+#profile-forms-container {
+  margin-top: 20% !important;
+}
+
+#profile-forms-container button {
+  border: none;
+  margin: 0;
+}
+
+.col-form {
+  max-width: 500px;
 }
 
 /* media queries */

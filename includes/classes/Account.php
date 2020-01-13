@@ -13,6 +13,50 @@ class Account
     $this->con = $con;
   }
 
+  public function updateDetails($fn, $ln, $em, $un)
+  {
+    $query = $this->con->prepare(
+      "UPDATE users 
+       SET firstName = :fn, secondName = :ln, email = :em
+       WHERE username = :un"
+    );
+    $query->bindValue(':fn', $fn);
+    $query->bindValue(':ln', $ln);
+    $query->bindValue(':em', $em);
+    $query->bindValue(':un', $un);
+
+    $query->execute();
+  }
+
+  public function updatePassword($username, $oldPass, $newPass)
+  {
+    $query = $this->con->prepare(
+      "SELECT * FROM users       
+       WHERE userName = :un
+       AND password = :pass"
+    );
+
+    $password = hash("sha512", $oldPass);
+
+    $query->bindValue(':un', $username);
+    $query->bindValue(':pass', $password);
+
+    $query->execute();
+
+    if ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+      $query = $this->con->prepare(
+        "UPDATE users       
+         SET password = :pass
+         WHERE username = :un"
+      );
+
+      $password = hash("sha512", $newPass);
+      $query->bindValue(':un', $username);
+      $query->bindValue(':pass', $password);
+      $query->execute();
+    }
+  }
+
   public function register($fn, $ln, $un, $em, $emc, $pw, $pwc)
   {
     $this->validateFirstName($fn);
